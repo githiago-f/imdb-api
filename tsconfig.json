@@ -9,7 +9,7 @@
     "sourceMap": true,
     "allowJs": false,
     "esModuleInterop": true,
-    "types": [
+    "typeRoots": [
       "node_modules/@types",
       "src/@types"
     ]
