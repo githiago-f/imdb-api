@@ -1,20 +1,28 @@
 import { InvalidError } from '@app/errors';
-import { isNil } from 'lodash';
+import { without } from 'lodash';
 import { ProfileRole } from '../entity/value-objects/ProfileRole';
 import { InvalidProfile } from './errors/InvalidProfile';
 
 export class ProfileDTO {
-  private constructor(
-    public readonly name: string,
-    public readonly password: string,
-    public readonly email: string,
-    public readonly role: ProfileRole
-  ) {}
+  public readonly name: string;
+  public readonly password: string;
+  public readonly email: string;
+  public readonly role: ProfileRole;
+
+  private static requiredFields = ['name', 'password', 'email'];
+
+  private constructor(data: Partial<ProfileDTO>) {
+    this.name = data.name;
+    this.email = data.email;
+    this.password = data.password;
+    this.role = data.role || ProfileRole.USER;
+  }
 
   static create(data: Partial<ProfileDTO>): ProfileDTO | InvalidError {
-    if(isNil(data)) {
-      return InvalidProfile();
+    const fields = without(ProfileDTO.requiredFields, ...Object.keys(data));
+    if(fields.length>0) {
+      return new InvalidProfile(fields);
     }
-
+    return new ProfileDTO(data);
   }
 }

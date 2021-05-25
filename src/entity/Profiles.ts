@@ -12,12 +12,12 @@ export class Profile {
   @Column('varchar', { nullable: true })
   token: string;
 
+  @Column('varchar', { length: 355, unique: true })
+  email: string;
+
+  @Column('enum', { enum: ProfileRole, default: ProfileRole.USER })
+  role: ProfileRole;
+
   @Column('bool', { default: false })
   excluded: boolean;
-
-  @Column('enum', {
-    enum: ProfileRole,
-    default: ProfileRole.USER
-  })
-  role: ProfileRole;
 }
