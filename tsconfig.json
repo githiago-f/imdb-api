@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./build",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "allowJs": false,
+    "esModuleInterop": true,
+    "types": [
+      "node_modules/@types",
+      "src/@types"
+    ]
+  }
+}
