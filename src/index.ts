@@ -4,7 +4,7 @@ import express, {Router} from 'express';
 import { Profile } from './entity/Profiles';
 import { ProfileController } from './controller/ProfileController';
 
-createConnection().then(async connection => {
+createConnection().then(async () => {
   const port = process.env.PORT || 8080;
 
   const app = express();
