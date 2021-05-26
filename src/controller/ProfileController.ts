@@ -5,6 +5,7 @@ import { Profile } from '../domain/entity/Profiles';
 import { CreateProfile } from '../domain/usecases/Profile/CreateProfile';
 import { UpdateProfile } from '../domain/usecases/Profile/UpdateProfile';
 import { DeleteMessage, DeleteProfile } from '../domain/usecases/Profile/DeleteProfile';
+import { FindProfile } from '../domain/usecases/Profile/FindProfile';
 
 export class ProfileController {
   constructor(
@@ -27,16 +28,17 @@ export class ProfileController {
 
   private async one(request: Request, response: Response): Promise<void> {
     const {id} = request.params;
-    try {
-      const profile = await this.profileRepository.findOne(id);
-      response.json(profile);
-      return;
-    } catch (e) {
-      response.status(404).json(new NotFound('profile', id));
+    const result = await new FindProfile(this.profileRepository).execute(id);
+    if(result instanceof Profile) {
+      response.json(result);
       return;
     }
+    response.status(result.statusCode).json(result);
   }
 
+  /**
+   * #### used as signup
+   */
   private async save(request: Request, response: Response): Promise<void> {
     const create = await new CreateProfile(this.profileRepository)
       .execute(request.body);

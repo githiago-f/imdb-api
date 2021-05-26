@@ -32,10 +32,10 @@ export class Login {
     if(!profile) {
       return new InvalidField('email/password', 'Invalid email or password!');
     }
-
     if(!await profile.matchPassword(password)) {
-      return profile;
+      return new InvalidField('email/password', 'Invalid email or password!');
     }
-    return new InvalidField('email/password', 'Invalid email or password!');
+    delete profile.password;
+    return profile;
   }
 }
