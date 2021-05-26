@@ -6,9 +6,9 @@
   "password": "pass123",
   "database": "teste-backend",
   "synchronize": true,
-  "logging": true,
+  "logging": false,
   "entities": [
-    "src/entity/**/*.ts"
+    "src/domain/entity/**/*.ts"
   ],
   "migrations": [
     "src/migration/**/*.ts"

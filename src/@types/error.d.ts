@@ -1,7 +1,8 @@
 declare module '@app/errors' {
-  type InvalidError = {
+  interface InvalidError {
     message: string;
     cause: string;
+    statusCode: number;
     fields?: Record<string, string>;
   }
 
