@@ -1,15 +1,19 @@
 import { Repository } from 'typeorm';
 import { Router, Response, Request } from 'express';
-import { Profile } from '../entity/Profiles';
-import { ProfileDTO } from '../dto/ProfileDTO';
 import { NotFound } from './errors/NotFound';
-import { ProfileRole } from '../entity/value-objects/ProfileRole';
+import { Profile } from '../domain/entity/Profiles';
+import { CreateProfile } from '../domain/usecases/Profile/CreateProfile';
+import { UpdateProfile } from '../domain/usecases/Profile/UpdateProfile';
+import { DeleteMessage, DeleteProfile } from '../domain/usecases/Profile/DeleteProfile';
 
 export class ProfileController {
-  constructor(private router: Router, private profileRepository: Repository<Profile>) {
+  constructor(
+    private router: Router,
+    private profileRepository: Repository<Profile>
+  ) {
     router.get('/', this.all.bind(this));
     router.post('/', this.save.bind(this));
-    router.patch('/', this.update.bind(this));
+    router.patch('/:id', this.update.bind(this));
     router.get('/:id', this.one.bind(this));
     router.delete('/:id', this.remove.bind(this));
   }
@@ -34,55 +38,35 @@ export class ProfileController {
   }
 
   private async save(request: Request, response: Response): Promise<void> {
-    const dto = ProfileDTO.create(request.body);
-    if(dto instanceof ProfileDTO) {
-      if(dto.role === ProfileRole.ADMIN) {
-        ((request.user as Profile).role === ProfileRole.ADMIN);
-      }
-      const data = this.profileRepository.save(dto);
-      response.status(201).json(data);
+    const create = await new CreateProfile(this.profileRepository)
+      .execute(request.body);
+    if(create instanceof Profile) {
+      response.status(201).json(create);
       return;
     }
-    response.status(422).json(dto);
+    response.status(create.statusCode||500).json(create);
   }
 
   private async update(request: Request, response: Response): Promise<void> {
     const {id} = request.params;
-    const userToUpdate = await this.profileRepository.findOne(id, {
-      where: {
-        excluded: false
-      }
-    });
+    const userToUpdate = await this.profileRepository.findOne(id);
     if(!userToUpdate) {
       response.status(404).json(new NotFound('profile', id));
       return;
     }
-    const data = Object.assign({}, request.body, userToUpdate);
-    const profile = ProfileDTO.create(data);
-    if(profile instanceof ProfileDTO) {
-      const updated = await this.profileRepository.update(userToUpdate, profile);
-      response.status(202).json(updated);
-    }
+    const updated = await new UpdateProfile(this.profileRepository)
+      .execute(id, request.body);
+    response.status(202).json(updated);
     return;
   }
 
   private async remove(request: Request, response: Response): Promise<void> {
     const {id} = request.params;
-    const userToRemove = await this.profileRepository.findOne(id, {
-      where: {
-        excluded: false
-      }
-    });
-    if(!userToRemove) {
-      response.status(404).json(new NotFound('profile', id));
+    const deleted = await new DeleteProfile(this.profileRepository).execute(id);
+    if(deleted instanceof DeleteMessage) {
+      response.json(deleted);
       return;
     }
-    await this.profileRepository.update(id, {
-      excluded: true
-    });
-    response.json({
-      message: 'Profile deleted!'
-    });
-    return;
+    response.status(deleted.statusCode).json(deleted);
   }
 }
