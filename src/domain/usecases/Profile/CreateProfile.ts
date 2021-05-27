@@ -21,7 +21,8 @@ export class CreateProfile {
         return new ProfileConflict();
       }
       await validProfileDTO.encryptPassword();
-      return await this.repository.save(validProfileDTO);
+      const profile = await this.repository.save(validProfileDTO);
+      return Object.assign(new Profile(), profile);
     }
     return validProfileDTO;
   }

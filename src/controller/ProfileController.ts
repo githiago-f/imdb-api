@@ -6,16 +6,20 @@ import { CreateProfile } from '../domain/usecases/Profile/CreateProfile';
 import { UpdateProfile } from '../domain/usecases/Profile/UpdateProfile';
 import { DeleteMessage, DeleteProfile } from '../domain/usecases/Profile/DeleteProfile';
 import { FindProfile } from '../domain/usecases/Profile/FindProfile';
+import passport from 'passport';
+import { Forbidden } from '../domain/guard/errors/Forbidden';
 
 export class ProfileController {
   constructor(
     private router: Router,
     private profileRepository: Repository<Profile>
   ) {
+    const middleware = passport.authenticate('jwt', {session: false});
+
     router.get('/', this.all.bind(this));
     router.post('/', this.save.bind(this));
     router.patch('/:id', this.update.bind(this));
-    router.get('/:id', this.one.bind(this));
+    router.get('/profile', middleware, this.profile.bind(this));
     router.delete('/:id', this.remove.bind(this));
   }
 
@@ -26,9 +30,14 @@ export class ProfileController {
     response.json(profiles);
   }
 
-  private async one(request: Request, response: Response): Promise<void> {
-    const {id} = request.params;
-    const result = await new FindProfile(this.profileRepository).execute(id);
+  private async profile(request: Request, response: Response): Promise<void> {
+    if(!request.user) {
+      const error = new Forbidden();
+      response.status(error.statusCode).json(error);
+      return;
+    }
+    const result = await new FindProfile(this.profileRepository)
+      .execute(request.user.id);
     if(result instanceof Profile) {
       response.json(result);
       return;
@@ -36,9 +45,6 @@ export class ProfileController {
     response.status(result.statusCode).json(result);
   }
 
-  /**
-   * #### used as signup
-   */
   private async save(request: Request, response: Response): Promise<void> {
     const create = await new CreateProfile(this.profileRepository)
       .execute(request.body);
