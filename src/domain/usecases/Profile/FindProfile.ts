@@ -8,13 +8,15 @@ export class FindProfile {
     private repository: Repository<Profile>
   ) {}
 
-  async execute(id: string, excluded?: boolean): Promise<Profile|InvalidError> {
-    const profile = await this.repository.findOne(id, excluded ? {} : {
-      where: { excluded }
-    });
+  async execute(id: string, onlyNotExcluded?: boolean): Promise<Profile|InvalidError> {
+    const profile = await this.repository
+      .findOne(id, onlyNotExcluded ? {} : {
+        where: { excluded: false }
+      });
     if(!profile) {
       return new ProfileNotFound();
     }
+    delete profile['password'];
     return profile;
   }
 }

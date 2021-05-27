@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import { ProfileRole } from './value-objects/ProfileRole';
 import { compare } from 'bcrypt';
+import { ProfileDTO } from '../usecases/Profile/dto/ProfileDTO';
 
 @Entity('profiles')
 export class Profile {
@@ -13,9 +14,6 @@ export class Profile {
 
   @Column()
   name: string;
-
-  @Column('varchar', { nullable: true })
-  token: string;
 
   @Column('varchar', { length: 355, unique: true })
   email: string;
@@ -31,5 +29,15 @@ export class Profile {
 
   public async matchPassword(requestPassword: string): Promise<boolean> {
     return compare(requestPassword, this.password);
+  }
+
+  public isAdmin(): boolean {
+    return this.role === ProfileRole.ADMIN;
+  }
+
+  public toJSON(): Profile {
+    const profile = Object.assign({}, this);
+    delete profile['password'];
+    return profile;
   }
 }

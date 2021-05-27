@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import validator from 'validator';
 import { Profile } from '../../entity/Profiles';
 import { InvalidField } from './dto/errors/InvalidField';
+import { InvalidCredentials } from './errors/InvalidCredentials';
 
 export class Login {
   constructor(
@@ -30,10 +31,10 @@ export class Login {
     });
 
     if(!profile) {
-      return new InvalidField('email/password', 'Invalid email or password!');
+      return new InvalidCredentials();
     }
     if(!await profile.matchPassword(password)) {
-      return new InvalidField('email/password', 'Invalid email or password!');
+      return new InvalidCredentials();
     }
     delete profile.password;
     return profile;
