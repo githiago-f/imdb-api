@@ -5,7 +5,7 @@ import { Forbidden } from './errors/Forbidden';
 
 export class OnlyUsersAccessGuard implements IGuard {
   public validate(request: Request): InvalidError | null {
-    if(!request.user) {
+    if(!request.user || request.user.isAdmin()) {
       return new Forbidden();
     }
   }

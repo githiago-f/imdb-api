@@ -2,7 +2,7 @@ import { InvalidError } from '@app/errors';
 import { isNil } from 'lodash';
 import { Repository } from 'typeorm';
 import validator from 'validator';
-import { Profile } from '../../entity/Profiles';
+import { Profile } from '../../entity/Profile';
 import { InvalidField } from './dto/errors/InvalidField';
 import { InvalidCredentials } from './errors/InvalidCredentials';
 

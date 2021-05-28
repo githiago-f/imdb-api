@@ -1,7 +1,7 @@
 import passport from 'passport';
 import Jwt from 'passport-jwt';
 import { Repository } from 'typeorm';
-import { Profile } from '../domain/entity/Profiles';
+import { Profile } from '../domain/entity/Profile';
 import { FindProfile } from '../domain/usecases/Profile/FindProfile';
 import { Constants } from './constants';
 

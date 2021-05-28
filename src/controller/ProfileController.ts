@@ -1,13 +1,14 @@
 import { Repository } from 'typeorm';
 import { Router, Response, Request } from 'express';
 import { NotFound } from './errors/NotFound';
-import { Profile } from '../domain/entity/Profiles';
+import { Profile } from '../domain/entity/Profile';
 import { CreateProfile } from '../domain/usecases/Profile/CreateProfile';
 import { UpdateProfile } from '../domain/usecases/Profile/UpdateProfile';
 import { DeleteMessage, DeleteProfile } from '../domain/usecases/Profile/DeleteProfile';
 import { FindProfile } from '../domain/usecases/Profile/FindProfile';
 import passport from 'passport';
 import { Forbidden } from '../domain/guard/errors/Forbidden';
+import { ErrorHandler } from './utils/ErrorHandler';
 
 export class ProfileController {
   constructor(
@@ -69,12 +70,13 @@ export class ProfileController {
   }
 
   private async remove(request: Request, response: Response): Promise<void> {
+    const errorHandler = new ErrorHandler(response);
     const {id} = request.params;
     const deleted = await new DeleteProfile(this.profileRepository).execute(id);
     if(deleted instanceof DeleteMessage) {
       response.json(deleted);
       return;
     }
-    response.status(deleted.statusCode).json(deleted);
+    return errorHandler.respond(deleted);
   }
 }

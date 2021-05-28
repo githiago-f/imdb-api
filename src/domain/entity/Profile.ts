@@ -1,11 +1,11 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column
+  Column,
+  BeforeInsert
 } from 'typeorm';
 import { ProfileRole } from './value-objects/ProfileRole';
-import { compare } from 'bcrypt';
-import { ProfileDTO } from '../usecases/Profile/dto/ProfileDTO';
+import { compare, genSalt, hash } from 'bcrypt';
 
 @Entity('profiles')
 export class Profile {
@@ -39,5 +39,10 @@ export class Profile {
     const profile = Object.assign({}, this);
     delete profile['password'];
     return profile;
+  }
+
+  @BeforeInsert()
+  public async beforeInsert(): Promise<void> {
+    this.password = await hash(this.password, await genSalt(10));
   }
 }

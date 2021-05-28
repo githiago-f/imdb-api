@@ -1,4 +1,4 @@
 export enum ProfileRole {
-  USER,
-  ADMIN
+  USER = 'user',
+  ADMIN = 'admin'
 }

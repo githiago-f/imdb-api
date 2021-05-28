@@ -1,6 +1,6 @@
 import { InvalidError } from '@app/errors';
 import { Repository, UpdateResult } from 'typeorm';
-import { Profile } from '../../entity/Profiles';
+import { Profile } from '../../entity/Profile';
 import { ProfileDTO } from './dto/ProfileDTO';
 
 export class UpdateProfile {

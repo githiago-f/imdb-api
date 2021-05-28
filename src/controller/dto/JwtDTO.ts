@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Constants } from '../../config/constants';
-import { Profile } from '../../domain/entity/Profiles';
+import { Profile } from '../../domain/entity/Profile';
 
 export class JwtDTO {
   public token: string;

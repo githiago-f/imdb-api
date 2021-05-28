@@ -1,6 +1,6 @@
 import { Request, Router, Response } from 'express';
 import { Repository } from 'typeorm';
-import { Profile } from '../domain/entity/Profiles';
+import { Profile } from '../domain/entity/Profile';
 import { Login } from '../domain/usecases/Profile/Login';
 import { JwtDTO } from './dto/JwtDTO';
 
@@ -26,7 +26,9 @@ export class AuthController {
           response.status(500).json(err);
           return;
         }
-        response.status(202).json(new JwtDTO(profile));
+        const jwt = new JwtDTO(profile);
+        response.setHeader('Authorization', `Bearer ${jwt.token}`);
+        response.status(202).json(jwt);
       });
       return;
     }

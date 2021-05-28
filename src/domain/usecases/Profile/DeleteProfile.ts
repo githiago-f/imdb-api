@@ -1,6 +1,6 @@
 import { InvalidError } from '@app/errors';
 import { Repository } from 'typeorm';
-import { Profile } from '../../entity/Profiles';
+import { Profile } from '../../entity/Profile';
 import { ProfileNotFound } from './errors/ProfileNotFound';
 
 export class DeleteMessage {

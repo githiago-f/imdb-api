@@ -5,6 +5,7 @@ import { ProfileRole } from '../../../entity/value-objects/ProfileRole';
 import { InvalidProfile } from './errors/InvalidProfile';
 import { InvalidField } from './errors/InvalidField';
 import { genSalt, hash } from 'bcrypt';
+import { Profile } from '../../../entity/Profile';
 
 export class ProfileDTO {
   public readonly name: string;
@@ -21,16 +22,16 @@ export class ProfileDTO {
     this.role = data.role || ProfileRole.USER;
   }
 
-  async encryptPassword(): Promise<void> {
-    this.password = await hash(this.password, await genSalt(10));
+  public build(): Profile {
+    return Object.assign(new Profile(), this);
   }
 
   private static notValid(data: Partial<ProfileDTO>): void|InvalidError {
-    if(data.email && !validator.isEmail(data.email)) {
-      return new InvalidField('email', data.email + 'is not an email');
+    if(!data.email || !validator.isEmail(data.email)) {
+      return new InvalidField('email', `"${data.email}" is not an email`);
     }
-    if(data.name && !validator.isAlphanumeric(data.name, 'pt-BR')){
-      return new InvalidField('name', 'Name should not contain non-alphanumeric values');
+    if(!data.name){
+      return new InvalidField('name', 'Name should not be null');
     }
   }
 
