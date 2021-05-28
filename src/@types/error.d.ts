@@ -7,6 +7,7 @@ declare module '@app/errors' {
   }
 
   type ResponseError = {
+    statusCode: number;
     message: string;
     input?: Record<string, unknown>;
   }
