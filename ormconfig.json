@@ -5,7 +5,7 @@
   "username": "guest",
   "password": "pass123",
   "database": "teste-backend",
-  "synchronize": true,
+  "synchronize": false,
   "logging": false,
   "entities": [
     "src/domain/entity/**/*.ts"
